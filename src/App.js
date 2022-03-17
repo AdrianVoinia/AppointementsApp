@@ -7,6 +7,8 @@ import { useCallback, useEffect, useState } from 'react';
 function App() {
   let [appointmentList, setAppointmentList] = useState([]);
   let [query, setQuery] = useState("");
+  let [sortBy, setSortBy] = useState("petName");
+  let [orderBy, setOrderBy] = useState("asc");
 
   const filteredAppointments = appointmentList.filter(
     item => {
@@ -14,10 +16,14 @@ function App() {
         item.petName.toLowerCase().includes(query.toLowerCase()) ||
         item.ownerName.toLowerCase().includes(query.toLowerCase()) ||
         item.aptNotes.toLowerCase().includes(query.toLowerCase())
-
       )
     }
-  )
+  ).sort((a,b) => {
+    let order = (orderBy === "asc") ? 1 : -1;
+    return (
+      a[sortBy].toLowerCase() < b[sortBy].toLowerCase() ? -1 * order : 1 * order
+    )
+  })
 
   const fetchData = useCallback(() => {
     fetch('./data.json')
@@ -36,6 +42,10 @@ function App() {
       <AddAppointment />
       <Search query={query}
         onQueryChange={query => setQuery(query)}
+        orderBy = {orderBy}
+        onOrderByChange = {myOrder => setOrderBy(myOrder)}
+        sortBy = {sortBy}
+        onSortByChange = {mySort => setSortBy(mySort)}
       />
 
       <ul className='divide-y divide-gray-200'>
